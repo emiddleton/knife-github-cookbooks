@@ -95,7 +95,7 @@ class Chef
           ui.error("please specify a cookbook to download and install")
           exit 1
         elsif name_args.size > 1
-          ui.error("Usage: knife cookbook github install USER/REPO [USER/REPO/BRANCH] (options)")
+          ui.error("Usage: knife cookbook github install USER/REPO[:COOKBOOK] [USER/REPO[:COOKBOOK]/BRANCH] (options)")
           exit 1
         else
           @github_user, @github_repo, @github_branch = name_args.first.split('/')
@@ -103,8 +103,12 @@ class Chef
             ui.error("Expected a github user and a repo to download from: jnewland/chef_ipmi")
             exit 1
           end
-          @cookbook_name = @github_repo.gsub(/[_-]?chef(?!-client|-server|_handler)[-_]?/, '').
-                                        gsub(/[_-]?cookbook[-_]?/, '')
+          if @github_repo =~ /:/
+            @github_repo, @cookbook_name = @github_repo.split(':')
+          else
+            @cookbook_name = @github_repo.gsub(/[_-]?chef(?!-client|-server|_handler)[-_]?/, '').
+                                          gsub(/[_-]?cookbook[-_]?/, '')
+          end
         end
       end
 
